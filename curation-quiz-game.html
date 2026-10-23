@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Curation Quiz Challenge</title>
+<style>
+:root{
+  --teal:#0d9488; --teal-dark:#0f766e;
+  --orange:#f97316; --orange-dark:#ea580c;
+  --navy:#1e3a5f; --navy-dark:#13263d;
+  --cream:#fef9f5; --ink:#13263d; --muted:#5b6b7b;
+  --good:#16a34a; --bad:#dc2626;
+  --radius:18px; --shadow:0 10px 30px rgba(19,38,61,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:linear-gradient(135deg,var(--orange-dark) 0%,var(--navy) 100%);color:var(--ink);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:18px}
+.wrap{width:100%;max-width:560px}
+.card{background:var(--cream);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.top{background:var(--navy-dark);color:#fff;padding:20px 22px;display:flex;justify-content:space-between;align-items:center}
+.top h1{font-size:1.2rem}
+.timer{font-size:1.4rem;font-weight:800;background:var(--orange);padding:4px 14px;border-radius:30px;min-width:52px;text-align:center}
+.timer.low{background:var(--bad);animation:blink .6s infinite}
+@keyframes blink{50%{opacity:.5}}
+.bar{height:9px;background:rgba(255,255,255,.18)}
+.bar span{display:block;height:100%;width:0;background:var(--teal);transition:width .4s ease}
+.meta{display:flex;justify-content:space-between;padding:12px 22px;font-size:.8rem;color:var(--muted);background:#fff;border-bottom:1px solid #eee}
+.meta b{color:var(--orange-dark)}
+.body{padding:24px 22px}
+.q{font-size:1.1rem;font-weight:700;color:var(--navy-dark);line-height:1.45}
+.opts{margin-top:18px;display:flex;flex-direction:column;gap:10px}
+.opt{text-align:left;background:#fff;border:2px solid #e3e8ee;cursor:pointer;font-size:.92rem;padding:14px 16px;border-radius:14px;color:var(--ink);transition:all .12s;line-height:1.4}
+.opt:hover{border-color:var(--orange)}
+.opt.reveal{border-color:var(--good);background:#e7f6ec}
+.opt.wrong{border-color:var(--bad);background:#fdeaea}
+.opt:disabled{cursor:default}
+.fb{margin-top:16px;padding:14px;border-radius:14px;font-size:.88rem;line-height:1.5;display:none}
+.fb.show{display:block}
+.fb.ok{background:#e7f6ec;border-left:5px solid var(--good)}
+.fb.no{background:#fdeaea;border-left:5px solid var(--bad)}
+.next{margin-top:14px;width:100%;background:var(--teal);color:#fff;border:none;padding:14px;border-radius:14px;font-weight:700;font-size:.95rem;cursor:pointer;display:none}
+.next.show{display:block}
+.next:hover{background:var(--teal-dark)}
+.end{text-align:center;padding:36px 24px}
+.score{font-size:3rem;font-weight:800;color:var(--orange-dark)}
+.end p{color:var(--muted);margin:10px 0 4px}
+.rank{font-size:1.1rem;font-weight:700;color:var(--teal-dark);margin:6px 0 20px}
+.replay{background:var(--navy);color:#fff;border:none;padding:14px 26px;border-radius:14px;font-weight:700;cursor:pointer}
+.replay:hover{background:var(--navy-dark)}
+.foot{text-align:center;font-size:.72rem;color:rgba(255,255,255,.75);margin-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="card">
+  <div class="top"><h1>⚡ Curation Quiz Challenge</h1><div class="timer" id="timer">15</div></div>
+  <div class="bar"><span id="prog"></span></div>
+  <div class="meta"><div>Question <b id="qn">1</b> / <span id="qt">10</span></div><div>Score <b id="sc">0</b></div></div>
+  <div class="body" id="play">
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="fb"></div>
+    <button class="next" id="next" onclick="nextQ()">Next →</button>
+  </div>
+</div>
+<div class="foot">Created by Mokoena M · Content Curation &amp; Knowledge Management</div>
+</div>
+<script>
+const Q=[
+ {q:"What is 'content curation' in a teaching context?",
+  opts:["Creating all resources from scratch yourself","Finding, evaluating, organising and sharing the best resources for a purpose","Saving every link you ever see"],a:1,
+  why:"Curation is selective: you evaluate and organise quality resources around a goal — not just hoarding links."},
+ {q:"According to Antonio, Martin & Stagg (2012), curation has shifted towards what kind of workflow?",
+  opts:["Manual paper filing","A networked, technology-supported workflow","Memorising everything"],a:1,
+  why:"Their work frames curation as networked and tool-supported — the reading behind your reflection posts."},
+ {q:"Which tool is best described as a visual collection board for curated links and media?",
+  opts:["Wakelet","Microsoft Excel","Zoom"],a:0,
+  why:"Wakelet lets you collect and arrange links, text and media into shareable visual collections."},
+ {q:"Why do you cite the source of a resource you curate?",
+  opts:["To make the post longer","To give credit and let others verify credibility","It is optional and unnecessary"],a:1,
+  why:"Citing credits the author and lets others judge the source — central to integrity and evaluation."},
+ {q:"Which of these is a strong indicator that a source is reliable?",
+  opts:["It has many shares","A named, credible author and a recent date","It has bright colours"],a:1,
+  why:"Authorship and currency are key evaluation criteria — popularity and design are not reliability."},
+ {q:"Which set of sources is most appropriate for a CAPS-aligned SA classroom?",
+  opts:["Random blogs and memes","DBE, WCED, Siyavula and SADAG","Anonymous essay-download sites"],a:1,
+  why:"These are credible, curriculum-relevant South African sources — exactly what a lecturer looks for."},
+ {q:"What does 'knowledge management' add on top of simply collecting resources?",
+  opts:["Organising and sharing knowledge so it can be reused and built on","Deleting files regularly","Keeping everything private forever"],a:0,
+  why:"Knowledge management is about structuring and sharing so knowledge stays useful over time."},
+ {q:"A reference-management tool often used to store and cite academic sources is:",
+  opts:["Zotero","TikTok","Paint"],a:0,
+  why:"Zotero stores, organises and generates citations for academic sources — a curation workhorse."},
+ {q:"Why evaluate a resource against clear criteria before adding it to your board?",
+  opts:["To fill space","So only accurate, relevant, credible resources are shared","Criteria slow you down for no reason"],a:1,
+  why:"Consistent criteria keep the collection trustworthy — the mark-earning habit of a good curator."},
+ {q:"What turns a personal collection into a professional learning network?",
+  opts:["Keeping it secret","Inviting peers to contribute and comment","Never updating it"],a:1,
+  why:"Collaboration and peer feedback move you from solo management to a shared learning network."}
+];
+let i=0,score=0,t,left;
+const $=id=>document.getElementById(id);
+function load(){
+ const q=Q[i];
+ $("qn").textContent=i+1;$("qt").textContent=Q.length;
+ $("q").textContent=q.q;
+ const box=$("opts");box.innerHTML="";
+ q.opts.forEach((txt,idx)=>{const b=document.createElement("button");b.className="opt";b.textContent=txt;b.onclick=()=>answer(idx);box.appendChild(b);});
+ $("fb").className="fb";$("next").classList.remove("show");
+ $("prog").style.width=(i/Q.length*100)+"%";
+ startTimer();
+}
+function startTimer(){
+ left=15;$("timer").textContent=left;$("timer").classList.remove("low");
+ t=setInterval(()=>{left--;$("timer").textContent=left;
+   if(left<=5)$("timer").classList.add("low");
+   if(left<=0){clearInterval(t);answer(-1);}
+ },1000);
+}
+function answer(idx){
+ clearInterval(t);
+ const q=Q[i];const correct=(idx===q.a);
+ if(correct)score++;$("sc").textContent=score;
+ const btns=$("opts").querySelectorAll(".opt");
+ btns.forEach((b,bi)=>{b.disabled=true;if(bi===q.a)b.classList.add("reveal");});
+ if(idx>=0&&!correct)btns[idx].classList.add("wrong");
+ const fb=$("fb");fb.className="fb show "+(correct?"ok":"no");
+ fb.innerHTML=(correct?"✅ <b>Correct!</b> ":(idx<0?"⏱️ <b>Time's up!</b> ":"❌ <b>Not quite.</b> "))+q.why;
+ $("next").textContent=(i===Q.length-1)?"See my score →":"Next →";
+ $("next").classList.add("show");
+ $("prog").style.width=((i+1)/Q.length*100)+"%";
+}
+function nextQ(){i++;if(i>=Q.length){end();}else{load();}}
+function end(){
+ clearInterval(t);
+ const pct=Math.round(score/Q.length*100);
+ let rank="Review the curation concepts and try again!";
+ if(pct>=90)rank="🏆 Curation Champion — lecturer-ready!";
+ else if(pct>=70)rank="🌟 Skilled Curator.";
+ else if(pct>=50)rank="👍 Developing Curator.";
+ $("timer").style.display="none";
+ $("play").outerHTML='<div class="end"><div class="score">'+score+'/'+Q.length+'</div><p>'+pct+'% correct</p><div class="rank">'+rank+'</div><button class="replay" onclick="location.reload()">↺ Play again</button></div>';
+ $("qn").textContent=Q.length;$("prog").style.width="100%";
+}
+load();
+</script>
+</body>
+</html>

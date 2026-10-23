@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Citizenship Dilemmas — LO Game</title>
+<style>
+:root{
+  --teal:#0d9488; --teal-dark:#0f766e;
+  --orange:#f97316; --orange-dark:#ea580c;
+  --navy:#1e3a5f; --navy-dark:#13263d;
+  --cream:#fef9f5; --ink:#13263d; --muted:#5b6b7b;
+  --good:#16a34a; --bad:#dc2626;
+  --radius:18px; --shadow:0 10px 30px rgba(19,38,61,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:linear-gradient(135deg,var(--teal-dark) 0%,var(--navy) 100%);color:var(--ink);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:18px}
+.wrap{width:100%;max-width:560px}
+.card{background:var(--cream);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.top{background:var(--teal-dark);color:#fff;padding:20px 22px}
+.top h1{font-size:1.25rem}
+.top p{opacity:.85;font-size:.82rem;margin-top:4px}
+.bar{height:9px;background:rgba(255,255,255,.18)}
+.bar span{display:block;height:100%;width:0;background:var(--orange);transition:width .4s ease}
+.meta{display:flex;justify-content:space-between;padding:12px 22px;font-size:.8rem;color:var(--muted);background:#fff;border-bottom:1px solid #eee}
+.meta b{color:var(--teal-dark)}
+.body{padding:24px 22px}
+.tag{display:inline-block;background:var(--orange);color:#fff;font-size:.68rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border-radius:30px;margin-bottom:12px}
+.scn{font-size:1.08rem;font-weight:600;color:var(--navy-dark);line-height:1.5}
+.opts{margin-top:18px;display:flex;flex-direction:column;gap:10px}
+.opt{text-align:left;background:#fff;border:2px solid #e3e8ee;cursor:pointer;font-size:.92rem;padding:14px 16px;border-radius:14px;color:var(--ink);transition:border-color .15s,transform .1s;line-height:1.4}
+.opt:hover{border-color:var(--teal)}
+.opt:active{transform:scale(.99)}
+.opt.pick-ok{border-color:var(--good);background:#e7f6ec}
+.opt.pick-no{border-color:var(--bad);background:#fdeaea}
+.opt.reveal{border-color:var(--good);background:#e7f6ec}
+.opt:disabled{cursor:default}
+.fb{margin-top:18px;padding:16px;border-radius:14px;font-size:.9rem;line-height:1.55;display:none}
+.fb.show{display:block;animation:pop .3s ease}
+.fb.ok{background:#e7f6ec;border-left:5px solid var(--good)}
+.fb.no{background:#fdeaea;border-left:5px solid var(--bad)}
+.fb b{color:var(--navy-dark)}
+.next{margin-top:16px;width:100%;background:var(--orange);color:#fff;border:none;padding:14px;border-radius:14px;font-weight:700;font-size:.95rem;cursor:pointer;display:none}
+.next.show{display:block}
+.next:hover{background:var(--orange-dark)}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.end{text-align:center;padding:36px 24px}
+.score{font-size:3rem;font-weight:800;color:var(--teal-dark)}
+.end p{color:var(--muted);margin:10px 0 4px}
+.rank{font-size:1.1rem;font-weight:700;color:var(--orange-dark);margin:6px 0 20px}
+.replay{background:var(--navy);color:#fff;border:none;padding:14px 26px;border-radius:14px;font-weight:700;cursor:pointer}
+.replay:hover{background:var(--navy-dark)}
+.foot{text-align:center;font-size:.72rem;color:rgba(255,255,255,.75);margin-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="card">
+  <div class="top">
+    <h1>🛡️ Digital Citizenship Dilemmas</h1>
+    <p>Life Orientation — make the responsible online choice.</p>
+  </div>
+  <div class="bar"><span id="prog"></span></div>
+  <div class="meta"><div>Dilemma <b id="qn">1</b> / <span id="qt">6</span></div><div>Score <b id="sc">0</b></div></div>
+  <div class="body" id="play">
+    <span class="tag">What would you do?</span>
+    <div class="scn" id="scn"></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="fb"></div>
+    <button class="next" id="next" onclick="nextQ()">Next dilemma →</button>
+  </div>
+</div>
+<div class="foot">Created by Mokoena M · Life Orientation · CAPS Digital Citizenship</div>
+</div>
+<script>
+const Q=[
+ {scn:"A classmate posts an embarrassing photo of you in the Grade 10 group chat and everyone is laughing.",
+  opts:["Post an even worse photo of them to get back","Calmly ask them to delete it, and tell a trusted adult if it continues","Say nothing and hope it disappears"],
+  a:1,why:"Responding with harm escalates cyberbullying. Asking for removal and involving a trusted adult protects your dignity — a core Life Orientation value."},
+ {scn:"You find a brilliant paragraph online that fits your assignment perfectly.",
+  opts:["Copy and paste it as your own","Rewrite it in your own words and cite the source","Change a few words so it won't be detected"],
+  a:1,why:"Using someone's ideas means crediting them. Paraphrasing and citing shows academic integrity — copying or disguising it is plagiarism."},
+ {scn:"A new 'friend' you only know online asks for your home address and a photo in school uniform.",
+  opts:["Send it — they seem nice","Refuse, stop chatting, and report the account","Give a fake address but keep chatting"],
+  a:1,why:"Sharing identifying details with strangers is a serious safety risk. Protecting personal information and reporting is the right move."},
+ {scn:"You see a sensational news post that makes you angry and want to share it immediately.",
+  opts:["Share now so others know","Check the source and date before deciding","Add your own angry caption and share"],
+  a:1,why:"Strong emotion is exactly how misinformation spreads. Verifying the source first is responsible digital citizenship and good curation."},
+ {scn:"Your phone battery is low but you want to keep scrolling late into the night before a school day.",
+  opts:["Scroll until it dies","Set a cut-off time to protect sleep and wellbeing","Charge it and scroll all night"],
+  a:1,why:"Managing screen time and protecting sleep is part of digital wellbeing — a balanced, healthy relationship with technology."},
+ {scn:"A free app asks for access to your contacts, photos, microphone and location before you can use it.",
+  opts:["Accept everything — it's quicker","Review the permissions and only allow what the app really needs","Accept, then forget about it"],
+  a:1,why:"Guarding your data footprint matters. Granting only necessary permissions protects your privacy and that of your contacts."}
+];
+let i=0,score=0;
+const $=id=>document.getElementById(id);
+function load(){
+ const q=Q[i];
+ $("qn").textContent=i+1;$("qt").textContent=Q.length;
+ $("scn").textContent=q.scn;
+ const box=$("opts");box.innerHTML="";
+ q.opts.forEach((t,idx)=>{
+   const b=document.createElement("button");
+   b.className="opt";b.textContent=t;
+   b.onclick=()=>answer(idx);box.appendChild(b);
+ });
+ $("fb").className="fb";$("fb").classList.remove("show");
+ $("next").classList.remove("show");
+ $("prog").style.width=(i/Q.length*100)+"%";
+}
+function answer(idx){
+ const q=Q[i];const correct=(idx===q.a);
+ if(correct)score++;$("sc").textContent=score;
+ const btns=$("opts").querySelectorAll(".opt");
+ btns.forEach((b,bi)=>{b.disabled=true;
+   if(bi===q.a)b.classList.add("reveal");
+ });
+ if(!correct)btns[idx].classList.add("pick-no");
+ const fb=$("fb");
+ fb.className="fb show "+(correct?"ok":"no");
+ fb.innerHTML=(correct?"✅ <b>Good choice!</b> ":"🤔 <b>The responsible choice was the highlighted one.</b> ")+q.why;
+ $("next").textContent=(i===Q.length-1)?"See my result →":"Next dilemma →";
+ $("next").classList.add("show");
+ $("prog").style.width=((i+1)/Q.length*100)+"%";
+}
+function nextQ(){ i++; if(i>=Q.length){end();}else{load();} }
+function end(){
+ const pct=Math.round(score/Q.length*100);
+ let rank="Keep building your digital citizenship!";
+ if(pct>=90)rank="🏆 Role-Model Digital Citizen!";
+ else if(pct>=67)rank="🌟 Responsible Digital Citizen.";
+ else if(pct>=50)rank="👍 Growing Digital Citizen.";
+ $("play").outerHTML='<div class="end"><div class="score">'+score+'/'+Q.length+'</div><p>'+pct+'% responsible choices</p><div class="rank">'+rank+'</div><button class="replay" onclick="location.reload()">↺ Play again</button></div>';
+ $("qn").textContent=Q.length;$("prog").style.width="100%";
+}
+load();
+</script>
+</body>
+</html>

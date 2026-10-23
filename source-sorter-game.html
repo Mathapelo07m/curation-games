@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spot the Reliable Source — Curation Game</title>
+<style>
+:root{
+  --teal:#0d9488; --teal-dark:#0f766e;
+  --orange:#f97316; --orange-dark:#ea580c;
+  --navy:#1e3a5f; --navy-dark:#13263d;
+  --cream:#fef9f5; --ink:#13263d; --muted:#5b6b7b;
+  --good:#16a34a; --bad:#dc2626;
+  --radius:18px; --shadow:0 10px 30px rgba(19,38,61,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:linear-gradient(135deg,var(--navy) 0%,var(--teal-dark) 100%);color:var(--ink);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:18px}
+.wrap{width:100%;max-width:560px}
+.card{background:var(--cream);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.top{background:var(--navy);color:#fff;padding:20px 22px}
+.top h1{font-size:1.25rem;letter-spacing:.3px}
+.top p{opacity:.85;font-size:.82rem;margin-top:4px}
+.bar{height:9px;background:rgba(255,255,255,.18)}
+.bar span{display:block;height:100%;width:0;background:var(--orange);transition:width .4s ease}
+.meta{display:flex;justify-content:space-between;padding:12px 22px;font-size:.8rem;color:var(--muted);background:#fff;border-bottom:1px solid #eee}
+.meta b{color:var(--teal-dark)}
+.body{padding:24px 22px}
+.tag{display:inline-block;background:var(--teal);color:#fff;font-size:.68rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border-radius:30px;margin-bottom:12px}
+.src{font-size:1.18rem;font-weight:700;color:var(--navy-dark);line-height:1.35}
+.desc{color:var(--muted);font-size:.92rem;margin-top:8px;line-height:1.5}
+.btns{display:flex;gap:12px;margin-top:22px}
+.btn{flex:1;border:none;cursor:pointer;font-size:.95rem;font-weight:700;padding:15px;border-radius:14px;color:#fff;transition:transform .15s,filter .15s}
+.btn:active{transform:scale(.97)}
+.btn.good{background:var(--good)}
+.btn.bad{background:var(--bad)}
+.btn:hover{filter:brightness(1.08)}
+.fb{margin-top:18px;padding:16px;border-radius:14px;font-size:.9rem;line-height:1.55;display:none}
+.fb.show{display:block;animation:pop .3s ease}
+.fb.ok{background:#e7f6ec;border-left:5px solid var(--good)}
+.fb.no{background:#fdeaea;border-left:5px solid var(--bad)}
+.fb b{color:var(--navy-dark)}
+.next{margin-top:16px;width:100%;background:var(--orange);color:#fff;border:none;padding:14px;border-radius:14px;font-weight:700;font-size:.95rem;cursor:pointer;display:none}
+.next.show{display:block}
+.next:hover{background:var(--orange-dark)}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.end{text-align:center;padding:36px 24px}
+.score{font-size:3rem;font-weight:800;color:var(--teal-dark)}
+.end p{color:var(--muted);margin:10px 0 4px}
+.rank{font-size:1.1rem;font-weight:700;color:var(--orange-dark);margin:6px 0 20px}
+.replay{background:var(--navy);color:#fff;border:none;padding:14px 26px;border-radius:14px;font-weight:700;cursor:pointer}
+.replay:hover{background:var(--navy-dark)}
+.foot{text-align:center;font-size:.72rem;color:rgba(255,255,255,.75);margin-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="card">
+  <div class="top">
+    <h1>🔎 Spot the Reliable Source</h1>
+    <p>Content Curation &amp; Knowledge Management — evaluate before you share.</p>
+  </div>
+  <div class="bar"><span id="prog"></span></div>
+  <div class="meta"><div>Source <b id="qn">1</b> / <span id="qt">8</span></div><div>Score <b id="sc">0</b></div></div>
+  <div class="body" id="play">
+    <span class="tag" id="tag">Would you curate this?</span>
+    <div class="src" id="src"></div>
+    <div class="desc" id="desc"></div>
+    <div class="btns">
+      <button class="btn good" onclick="answer(true)">✓ Trustworthy</button>
+      <button class="btn bad" onclick="answer(false)">✗ Red flag</button>
+    </div>
+    <div class="fb" id="fb"></div>
+    <button class="next" id="next" onclick="nextQ()">Next source →</button>
+  </div>
+</div>
+<div class="foot">Created by Mokoena M · ICT &amp; Life Orientation · CAPS-aligned curation skills</div>
+</div>
+<script>
+const Q=[
+ {src:"DBE National CAPS Document (education.gov.za)",desc:"The official Department of Basic Education curriculum policy for your subject and grade.",ok:true,why:"Authoritative author (national DBE), current policy, and directly relevant to CAPS — a core source for any SA teacher."},
+ {src:"'Top 10 Life Hacks' — anonymous viral blog",desc:"No author named, no date, lots of pop-up ads, claims with no references.",ok:false,why:"Fails the author, accuracy and purpose criteria: no named author, no sources, and it exists to sell ads, not inform."},
+ {src:"Siyavula Open Textbooks (siyavula.com)",desc:"Free CAPS-aligned Maths and Science textbooks used in SA schools, reviewed by educators.",ok:true,why:"Credible SA education org, CAPS-aligned, peer-reviewed content — relevant and reliable."},
+ {src:"A forwarded WhatsApp voice note about exam leaks",desc:"Shared by a parent group, no original source, urges you to forward it quickly.",ok:false,why:"Unverifiable origin and urgency-to-share is a classic misinformation red flag — fails accuracy and currency checks."},
+ {src:"SADAG — SA Depression & Anxiety Group (sadag.org)",desc:"SA's largest mental-health NGO; counselling lines and learner wellbeing resources.",ok:true,why:"Reputable NGO, directly relevant to Life Orientation wellbeing topics, clear purpose to support — highly curatable."},
+ {src:"FreeEssays247.com — 'download any assignment'",desc:"Offers ready-made essays to hand in, no authors, no citations.",ok:false,why:"Purpose is academic dishonesty, no credible authorship — fails ethics, author and purpose criteria."},
+ {src:"CS Unplugged (csunplugged.org)",desc:"Free computing-science activities that teach coding concepts without devices, by educators.",ok:true,why:"Credible, purpose-built for teaching, perfect for unplugged ICT lessons — relevant and reliable."},
+ {src:"A meme claiming '5G causes bad grades'",desc:"An image with a bold claim, no source, thousands of shares.",ok:false,why:"No evidence, no author, designed for shares not accuracy — fails every evaluation criterion."}
+];
+let i=0,score=0;
+const $=id=>document.getElementById(id);
+function load(){
+ const q=Q[i];
+ $("qn").textContent=i+1;$("qt").textContent=Q.length;
+ $("src").textContent=q.src;$("desc").textContent=q.desc;
+ $("tag").style.display="inline-block";
+ $("fb").className="fb";$("fb").classList.remove("show");
+ $("next").classList.remove("show");
+ document.querySelectorAll(".btn").forEach(b=>b.disabled=false);
+ $("prog").style.width=(i/Q.length*100)+"%";
+}
+function answer(choice){
+ const q=Q[i];const correct=(choice===q.ok);
+ if(correct)score++;$("sc").textContent=score;
+ document.querySelectorAll(".btn").forEach(b=>b.disabled=true);
+ const fb=$("fb");
+ fb.className="fb show "+(correct?"ok":"no");
+ fb.innerHTML=(correct?"✅ <b>Correct!</b> ":"❌ <b>Not quite.</b> This one is "+(q.ok?"trustworthy":"a red flag")+". ")+q.why;
+ $("next").textContent=(i===Q.length-1)?"See my result →":"Next source →";
+ $("next").classList.add("show");
+ $("prog").style.width=((i+1)/Q.length*100)+"%";
+}
+function nextQ(){ i++; if(i>=Q.length){end();}else{load();} }
+function end(){
+ const pct=Math.round(score/Q.length*100);
+ let rank="Keep practising your source checks!";
+ if(pct>=90)rank="🏆 Master Curator — lecturer-ready!";
+ else if(pct>=70)rank="🌟 Strong Curator — sharp eye for sources.";
+ else if(pct>=50)rank="👍 Developing Curator — getting there.";
+ $("play").parentElement.querySelector(".top p").textContent="How well can you tell a trustworthy source from a red flag?";
+ $("play").outerHTML='<div class="end"><div class="score">'+score+'/'+Q.length+'</div><p>'+pct+'% of sources correctly evaluated</p><div class="rank">'+rank+'</div><button class="replay" onclick="location.reload()">↺ Play again</button></div>';
+ $("qn").textContent=Q.length;$("prog").style.width="100%";
+}
+load();
+</script>
+</body>
+</html>

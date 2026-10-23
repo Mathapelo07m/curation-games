@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Curation Games Hub — Mokoena M</title>
+<style>
+:root{
+  --teal:#0d9488; --teal-dark:#0f766e;
+  --orange:#f97316; --orange-dark:#ea580c;
+  --navy:#1e3a5f; --navy-dark:#13263d;
+  --cream:#fef9f5; --ink:#13263d; --muted:#5b6b7b;
+  --radius:20px; --shadow:0 14px 36px rgba(19,38,61,.18);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:linear-gradient(135deg,var(--navy) 0%,var(--teal-dark) 100%);color:var(--ink);min-height:100vh;padding:34px 18px;display:flex;flex-direction:column;align-items:center}
+.head{text-align:center;color:#fff;max-width:620px;margin-bottom:30px}
+.head .badge{display:inline-block;background:var(--orange);font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:6px 14px;border-radius:30px;margin-bottom:16px}
+.head h1{font-size:2rem;line-height:1.2;margin-bottom:12px}
+.head p{opacity:.9;font-size:.98rem;line-height:1.55}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;width:100%;max-width:960px}
+.tile{background:var(--cream);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;text-decoration:none;color:inherit;display:flex;flex-direction:column;transition:transform .18s,box-shadow .18s}
+.tile:hover{transform:translateY(-6px);box-shadow:0 20px 44px rgba(19,38,61,.26)}
+.tile .cap{padding:26px 22px;font-size:3rem;text-align:center;color:#fff}
+.c1{background:linear-gradient(135deg,var(--navy),var(--teal-dark))}
+.c2{background:linear-gradient(135deg,var(--teal-dark),var(--teal))}
+.c3{background:linear-gradient(135deg,var(--orange-dark),var(--navy))}
+.tile .txt{padding:20px 22px 24px}
+.tile .subj{font-size:.68rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--orange-dark);margin-bottom:8px}
+.tile h2{font-size:1.18rem;color:var(--navy-dark);margin-bottom:8px;line-height:1.3}
+.tile p{font-size:.88rem;color:var(--muted);line-height:1.5}
+.tile .go{margin-top:16px;display:inline-block;background:var(--teal);color:#fff;font-weight:700;font-size:.85rem;padding:10px 18px;border-radius:12px}
+.tile:hover .go{background:var(--orange)}
+.foot{text-align:center;color:rgba(255,255,255,.82);font-size:.8rem;margin-top:34px;max-width:620px;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="head">
+  <span class="badge">Play &amp; Learn</span>
+  <h1>Content Curation Games</h1>
+  <p>Three interactive games I built to make content curation, digital citizenship and resource evaluation engaging for learners — CAPS-aligned, for ICT and Life Orientation. Tap a card to play.</p>
+</div>
+<div class="grid">
+  <a class="tile" href="source-sorter-game.html">
+    <div class="cap c1">🔎</div>
+    <div class="txt">
+      <div class="subj">ICT · Evaluation</div>
+      <h2>Spot the Reliable Source</h2>
+      <p>Judge eight real sources as trustworthy or a red flag, with feedback on the evaluation criteria.</p>
+      <span class="go">Play →</span>
+    </div>
+  </a>
+  <a class="tile" href="digital-citizenship-game.html">
+    <div class="cap c2">🛡️</div>
+    <div class="txt">
+      <div class="subj">Life Orientation</div>
+      <h2>Digital Citizenship Dilemmas</h2>
+      <p>Six real-life online scenarios — make the responsible choice and learn why it matters.</p>
+      <span class="go">Play →</span>
+    </div>
+  </a>
+  <a class="tile" href="curation-quiz-game.html">
+    <div class="cap c3">⚡</div>
+    <div class="txt">
+      <div class="subj">Curation · Timed</div>
+      <h2>Curation Quiz Challenge</h2>
+      <p>Ten fast questions on curation concepts, tools and sources — beat the 15-second timer.</p>
+      <span class="go">Play →</span>
+    </div>
+  </a>
+</div>
+<div class="foot">Created by Mokoena M · Student 221095389 · ICT &amp; Life Orientation · Content Curation &amp; Knowledge Management</div>
+</body>
+</html>
